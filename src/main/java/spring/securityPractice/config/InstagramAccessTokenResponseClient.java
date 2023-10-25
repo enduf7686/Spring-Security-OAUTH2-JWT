@@ -1,5 +1,10 @@
 package spring.securityPractice.config;
 
+import static org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType.BEARER;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.RequestEntity;
@@ -18,21 +23,16 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType.BEARER;
-
 @Slf4j
-public class CustomOAuth2AccessTokenResponseClient implements OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> {
+public class InstagramAccessTokenResponseClient implements
+        OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> {
     private static final String INVALID_TOKEN_RESPONSE_ERROR_CODE = "invalid_token_response";
 
     private Converter<OAuth2AuthorizationCodeGrantRequest, RequestEntity<?>> requestEntityConverter = new OAuth2AuthorizationCodeGrantRequestEntityConverter();
 
     private RestOperations restOperations;
 
-    public CustomOAuth2AccessTokenResponseClient() {
+    public InstagramAccessTokenResponseClient() {
         RestTemplate restTemplate = new RestTemplate(
                 Arrays.asList(new FormHttpMessageConverter(), new OAuth2AccessTokenResponseHttpMessageConverter()));
         restTemplate.setErrorHandler(new OAuth2ErrorResponseErrorHandler());
@@ -44,8 +44,9 @@ public class CustomOAuth2AccessTokenResponseClient implements OAuth2AccessTokenR
             OAuth2AuthorizationCodeGrantRequest authorizationCodeGrantRequest) {
         Assert.notNull(authorizationCodeGrantRequest, "authorizationCodeGrantRequest cannot be null");
 
-        if (authorizationCodeGrantRequest.getClientRegistration().getClientName().equals("Instagram"))
+        if (authorizationCodeGrantRequest.getClientRegistration().getClientName().equals("Instagram")) {
             return getInstagramTokenResponse(authorizationCodeGrantRequest);
+        }
 
         RequestEntity<?> request = this.requestEntityConverter.convert(authorizationCodeGrantRequest);
         ResponseEntity<OAuth2AccessTokenResponse> response = getResponse(request);
@@ -76,7 +77,8 @@ public class CustomOAuth2AccessTokenResponseClient implements OAuth2AccessTokenR
         this.restOperations = restOperations;
     }
 
-    public OAuth2AccessTokenResponse getInstagramTokenResponse(OAuth2AuthorizationCodeGrantRequest authorizationGrantRequest) {
+    public OAuth2AccessTokenResponse getInstagramTokenResponse(
+            OAuth2AuthorizationCodeGrantRequest authorizationGrantRequest) {
         RestTemplate restTemplate = new RestTemplate();
         RequestEntity<?> request = this.requestEntityConverter.convert(authorizationGrantRequest);
         ResponseEntity<InstagramAccessToken> response = restTemplate.exchange(request, InstagramAccessToken.class);

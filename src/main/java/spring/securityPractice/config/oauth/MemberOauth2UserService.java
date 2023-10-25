@@ -54,6 +54,6 @@ public class MemberOauth2UserService extends DefaultOAuth2UserService {
         }
         Member member = memberOptional.get();
 
-        return new MemberDetails(member.getId(), member.getUsername(), member.getRole(), member.getProviderId());
+        return new MemberDetails(member.getId(), member.getUsername(), member.getRole().toString(), member.getProviderId());
     }
 }

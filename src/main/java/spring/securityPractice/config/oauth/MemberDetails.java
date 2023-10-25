@@ -18,7 +18,7 @@ public class MemberDetails implements OAuth2User {
 
     private final String username;
 
-    private final Role role;
+    private final String role;
 
     private final String providerId;
 

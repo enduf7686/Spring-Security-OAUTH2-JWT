@@ -19,38 +19,43 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                .authorizeRequests()
-                .antMatchers("/user/**").authenticated() /** 인증만 되면 들어갈 수 있는 주소 **/
-                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-                .anyRequest().permitAll()
-                .and()
                 .formLogin().disable()
                 .httpBasic().disable()
+                .sessionManagement(
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
+                .authorizeRequests(
+                        authorize -> authorize
+                                .antMatchers("/user/**").authenticated() /** 인증만 되면 들어갈 수 있는 주소 **/
+                                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
+                                .anyRequest().permitAll()
+                )
                 .addFilterBefore(jwtAuthenticationFilter(), OAuth2LoginAuthenticationFilter.class)
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/loginForm")
-                        .defaultSuccessUrl("/user")
-                        .tokenEndpoint(token -> token.accessTokenResponseClient(customOAuth2AccessTokenResponseClient()))
-                        .userInfoEndpoint(userInfo -> userInfo.userService(memberOauth2UserService))
-                        .successHandler(customSuccessHandler())
+                .oauth2Login(
+                        oauth2 -> oauth2
+                                .loginPage("/loginForm")
+                                .defaultSuccessUrl("/user")
+                                .tokenEndpoint(
+                                        token -> token.accessTokenResponseClient(instagramAccessTokenResponseClient()))
+                                .userInfoEndpoint(userInfo -> userInfo.userService(memberOauth2UserService))
+                                .successHandler(customSuccessHandler())
                 );
 
         return httpSecurity.build();
     }
 
     @Bean
-    public CustomOAuth2AccessTokenResponseClient customOAuth2AccessTokenResponseClient() {
-        return new CustomOAuth2AccessTokenResponseClient();
+    public InstagramAccessTokenResponseClient instagramAccessTokenResponseClient() {
+        return new InstagramAccessTokenResponseClient();
     }
 
     @Bean
     public AuthenticationSuccessHandler customSuccessHandler() {
-        return new CustomSuccessHandler();
+        return new SavedRequestAwareAndJwtResponseSuccessHandler();
     }
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(memberOauth2UserService);
+        return new JwtAuthenticationFilter();
     }
 }
