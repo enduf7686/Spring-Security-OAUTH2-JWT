@@ -40,9 +40,9 @@ public class MemberOauth2UserService extends DefaultOAuth2UserService {
         String username = "@" + userAttributes.get("username");
         String userId = userRequest.getAdditionalParameters().get("userId").toString();
 
-        Optional<Member> member = memberRepository.findByUsername(username);
-        if (member.isEmpty()) {
-            member = Optional.of(
+        Optional<Member> memberOptional = memberRepository.findByUsername(username);
+        if (memberOptional.isEmpty()) {
+            memberOptional = Optional.of(
                     memberRepository.save(Member.builder()
                             .username(username)
                             .password(UUID.randomUUID().toString())
@@ -52,12 +52,8 @@ public class MemberOauth2UserService extends DefaultOAuth2UserService {
                             .createDate(LocalDateTime.now())
                             .build()));
         }
+        Member member = memberOptional.get();
 
-        return new MemberDetails(member.get());
-    }
-
-    public MemberDetails loadUserByUsername(String username) {
-        Optional<Member> member = memberRepository.findByUsername(username);
-        return new MemberDetails(member.get());
+        return new MemberDetails(member.getId(), member.getUsername(), member.getRole(), member.getProviderId());
     }
 }

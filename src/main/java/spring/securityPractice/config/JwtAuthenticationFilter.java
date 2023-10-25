@@ -15,6 +15,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.web.filter.OncePerRequestFilter;
 import spring.securityPractice.config.oauth.MemberDetails;
 import spring.securityPractice.config.oauth.MemberOauth2UserService;
+import spring.securityPractice.domain.Role;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,13 +34,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Jws<Claims> claimsJws = Jwts.parser()
                     .setSigningKey("fjdifjdifjojsidfjsdofjsdi")
                     .parseClaimsJws(jwt);
-            String username = claimsJws.getBody().get("username").toString();
-            log.info("claimsJws.getBody().get(\"username\")={}", username);
-            log.info("claimsJws.getSignature()={}", claimsJws.getSignature());
+            Long id = (Long) claimsJws.getBody().get("id");
+            String username = (String) claimsJws.getBody().get("username");
+            Role role = (Role) claimsJws.getBody().get("role");
+            String providerId = (String) claimsJws.getBody().get("providerId");
 
-            MemberDetails userDetails = memberOauth2UserService.loadUserByUsername(username);
-            OAuth2AuthenticationToken oAuth2AuthenticationToken = new OAuth2AuthenticationToken(userDetails,
-                    userDetails.getAuthorities(), userDetails.getRegistrationId());
+            MemberDetails memberDetails = new MemberDetails(id, username, role, providerId);
+            OAuth2AuthenticationToken oAuth2AuthenticationToken = new OAuth2AuthenticationToken(memberDetails,
+                    memberDetails.getAuthorities(), memberDetails.getProviderId());
             SecurityContextHolder.getContext().setAuthentication(oAuth2AuthenticationToken);
         }
 

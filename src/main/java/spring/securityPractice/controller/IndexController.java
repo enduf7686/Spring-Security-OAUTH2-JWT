@@ -7,7 +7,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import spring.securityPractice.config.oauth.MemberDetails;
-import spring.securityPractice.domain.Member;
 import spring.securityPractice.repository.MemberRepository;
 
 @Slf4j
@@ -20,7 +19,6 @@ public class IndexController {
     @GetMapping("/test/login")
     @ResponseBody
     public String loginTest(@AuthenticationPrincipal MemberDetails memberDetails) {
-        log.info("authentication={}", memberDetails.getMember());
         return "세션 정보 확인하기";
     }
 
@@ -38,8 +36,8 @@ public class IndexController {
 
     @GetMapping("/user")
     @ResponseBody
-    public Member user(@AuthenticationPrincipal MemberDetails memberDetails) {
-        return memberDetails.getMember();
+    public MemberDetails user(@AuthenticationPrincipal MemberDetails memberDetails) {
+        return memberDetails;
     }
 
     @GetMapping("/admin")
