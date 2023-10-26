@@ -1,9 +1,17 @@
 package spring.securityPractice.domain;
 
-import lombok.*;
-
-import javax.persistence.*;
 import java.time.LocalDateTime;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
@@ -12,14 +20,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
     private String username;
 
     private String password;
-
-    private String email;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -31,10 +38,10 @@ public class Member {
     private LocalDateTime createDate;
 
     @Builder
-    public Member(String username, String password, String email, Role role, String provider, String providerId, LocalDateTime createDate) {
+    public Member(String username, String password, Role role, String provider, String providerId,
+                  LocalDateTime createDate) {
         this.username = username;
         this.password = password;
-        this.email = email;
         this.role = role;
         this.provider = provider;
         this.providerId = providerId;

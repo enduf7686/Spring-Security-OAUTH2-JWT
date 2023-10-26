@@ -5,10 +5,8 @@ import java.util.Collection;
 import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import spring.securityPractice.domain.Role;
 
 @Getter
 @RequiredArgsConstructor
@@ -31,7 +29,7 @@ public class MemberDetails implements OAuth2User {
 
     @Override
     public String getName() {
-        return username + "_" + id;
+        return username + "_" + providerId;
     }
 
     @Override

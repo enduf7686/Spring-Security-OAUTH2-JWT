@@ -8,21 +8,25 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import spring.securityPractice.config.oauth.MemberOauth2UserService;
+import org.springframework.security.web.savedrequest.CookieRequestCache;
+import spring.securityPractice.config.oauth.MemberDetailsService;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final MemberOauth2UserService memberOauth2UserService;
+    private final MemberDetailsService memberDetailsService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf().disable()
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf().disable()
                 .formLogin().disable()
                 .httpBasic().disable()
                 .sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .requestCache(
+                        request -> request.requestCache(new CookieRequestCache())
                 )
                 .authorizeRequests(
                         authorize -> authorize
@@ -34,14 +38,15 @@ public class SecurityConfig {
                 .oauth2Login(
                         oauth2 -> oauth2
                                 .loginPage("/loginForm")
-                                .defaultSuccessUrl("/user")
+                                .defaultSuccessUrl("/")
                                 .tokenEndpoint(
-                                        token -> token.accessTokenResponseClient(instagramAccessTokenResponseClient()))
-                                .userInfoEndpoint(userInfo -> userInfo.userService(memberOauth2UserService))
+                                        token -> token.accessTokenResponseClient(instagramAccessTokenResponseClient())
+                                )
+                                .userInfoEndpoint(userInfo -> userInfo.userService(memberDetailsService))
                                 .successHandler(customSuccessHandler())
                 );
 
-        return httpSecurity.build();
+        return http.build();
     }
 
     @Bean
