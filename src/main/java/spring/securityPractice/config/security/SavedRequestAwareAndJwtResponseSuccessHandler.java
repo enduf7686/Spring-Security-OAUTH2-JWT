@@ -1,4 +1,4 @@
-package spring.securityPractice.config;
+package spring.securityPractice.config.security;
 
 import com.nimbusds.jose.shaded.json.JSONObject;
 import java.io.IOException;

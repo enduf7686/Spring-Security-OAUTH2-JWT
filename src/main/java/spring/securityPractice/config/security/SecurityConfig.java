@@ -1,4 +1,4 @@
-package spring.securityPractice.config;
+package spring.securityPractice.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +9,6 @@ import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationF
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.CookieRequestCache;
-import spring.securityPractice.config.oauth.MemberDetailsService;
 
 @Configuration
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package spring.securityPractice.config;
+package spring.securityPractice.config.security;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

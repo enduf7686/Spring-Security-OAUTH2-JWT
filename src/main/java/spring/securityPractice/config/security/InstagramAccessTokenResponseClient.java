@@ -1,4 +1,4 @@
-package spring.securityPractice.config;
+package spring.securityPractice.config.security;
 
 import static org.springframework.security.oauth2.core.OAuth2AccessToken.TokenType.BEARER;
 

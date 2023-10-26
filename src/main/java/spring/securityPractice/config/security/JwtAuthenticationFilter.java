@@ -1,7 +1,7 @@
-package spring.securityPractice.config;
+package spring.securityPractice.config.security;
 
-import static spring.securityPractice.config.JwtConstants.AUTHORIZATION_HEADER;
-import static spring.securityPractice.config.JwtConstants.AUTHORIZATION_HEADER_PREFIX;
+import static spring.securityPractice.config.security.JwtConstants.AUTHORIZATION_HEADER;
+import static spring.securityPractice.config.security.JwtConstants.AUTHORIZATION_HEADER_PREFIX;
 
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.filter.OncePerRequestFilter;
-import spring.securityPractice.config.oauth.MemberDetails;
 
 @Slf4j
 @RequiredArgsConstructor

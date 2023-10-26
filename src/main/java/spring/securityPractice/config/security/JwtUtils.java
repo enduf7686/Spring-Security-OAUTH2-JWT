@@ -1,6 +1,6 @@
-package spring.securityPractice.config;
+package spring.securityPractice.config.security;
 
-import static spring.securityPractice.config.JwtConstants.SECRET_KEY;
+import static spring.securityPractice.config.security.JwtConstants.SECRET_KEY;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -8,7 +8,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.sql.Date;
 import org.springframework.security.core.Authentication;
-import spring.securityPractice.config.oauth.MemberDetails;
 
 public class JwtUtils {
 

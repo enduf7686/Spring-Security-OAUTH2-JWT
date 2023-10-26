@@ -1,4 +1,4 @@
-package spring.securityPractice.config.oauth;
+package spring.securityPractice.config.security;
 
 import java.time.LocalDateTime;
 import java.util.Map;
