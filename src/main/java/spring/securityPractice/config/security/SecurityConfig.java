@@ -9,12 +9,13 @@ import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationF
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.CookieRequestCache;
+import spring.securityPractice.repository.MemberRepository;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final MemberDetailsService memberDetailsService;
+    private final MemberRepository memberRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -27,6 +28,9 @@ public class SecurityConfig {
                 .requestCache(
                         request -> request.requestCache(new CookieRequestCache())
                 )
+                .exceptionHandling(
+                        exception -> exception.authenticationEntryPoint(bearerAuthenticationEntryPoint())
+                )
                 .authorizeRequests(
                         authorize -> authorize
                                 .antMatchers("/user/**").authenticated() /** 인증만 되면 들어갈 수 있는 주소 **/
@@ -36,12 +40,10 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter(), OAuth2LoginAuthenticationFilter.class)
                 .oauth2Login(
                         oauth2 -> oauth2
-                                .loginPage("/loginForm")
-                                .defaultSuccessUrl("/")
                                 .tokenEndpoint(
                                         token -> token.accessTokenResponseClient(instagramAccessTokenResponseClient())
                                 )
-                                .userInfoEndpoint(userInfo -> userInfo.userService(memberDetailsService))
+                                .userInfoEndpoint(userInfo -> userInfo.userService(memberDetailsService()))
                                 .successHandler(customSuccessHandler())
                 );
 
@@ -61,5 +63,15 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter();
+    }
+
+    @Bean
+    public BearerAuthenticationEntryPoint bearerAuthenticationEntryPoint() {
+        return new BearerAuthenticationEntryPoint();
+    }
+
+    @Bean
+    public MemberDetailsService memberDetailsService() {
+        return new MemberDetailsService(memberRepository);
     }
 }

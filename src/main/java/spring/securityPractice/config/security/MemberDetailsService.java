@@ -21,7 +21,6 @@ import spring.securityPractice.domain.Role;
 import spring.securityPractice.repository.MemberRepository;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class MemberDetailsService extends DefaultOAuth2UserService {
 
