@@ -18,27 +18,26 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 public class SavedRequestAwareAndJwtResponseSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private RequestCache requestCache = new CookieRequestCache();
-
-    //TODO: refreshToken 발급 기능 구현하기
+    
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
+        String accessToken = JwtUtils.createAccessToken(authentication);
+        String refreshToken = JwtUtils.createRefreshToken();
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);
-
-        JSONObject json;
-        if (savedRequest == null) {
-            json = createJson(JwtUtils.createJwt(authentication), "/");
-        } else {
-            json = createJson(JwtUtils.createJwt(authentication), savedRequest.getRedirectUrl());
-        }
-        responseJson(response, json);
+        responseJson(response, createJson(accessToken, refreshToken, savedRequest));
     }
 
-    private JSONObject createJson(String jwt, String targetUrl) {
+    private JSONObject createJson(String accessToken, String refreshToken, SavedRequest savedRequest) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.appendField("accessToken", jwt);
-        jsonObject.appendField("redirectUrl", targetUrl);
+        jsonObject.appendField("accessToken", accessToken);
+        jsonObject.appendField("refreshToken", refreshToken);
+        if (savedRequest == null) {
+            jsonObject.appendField("redirectUrl", "/");
+        } else {
+            jsonObject.appendField("redirectUrl", savedRequest.getRedirectUrl());
+        }
         return jsonObject;
     }
 

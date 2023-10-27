@@ -11,7 +11,8 @@ import org.springframework.security.core.Authentication;
 
 public class JwtUtils {
 
-    public static String createJwt(Authentication authentication) {
+    //TODO: 토큰 유효기간 설정
+    public static String createAccessToken(Authentication authentication) {
         MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
 
         return Jwts.builder()
@@ -21,6 +22,16 @@ public class JwtUtils {
                 .claim("username", memberDetails.getUsername())
                 .claim("role", memberDetails.getRole())
                 .claim("providerId", memberDetails.getProviderId())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
+    }
+
+    public static String createRefreshToken() {
+        return Jwts.builder()
+                .setHeaderParam("typ", "JWT")
+                .setSubject("SecurityPracticeApplication")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 3600000))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
