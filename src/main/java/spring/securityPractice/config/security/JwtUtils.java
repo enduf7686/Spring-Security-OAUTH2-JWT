@@ -3,15 +3,20 @@ package spring.securityPractice.config.security;
 import static spring.securityPractice.config.security.JwtConstants.SECRET_KEY;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
 import java.sql.Date;
 import org.springframework.security.core.Authentication;
 
 public class JwtUtils {
 
-    //TODO: 토큰 유효기간 설정
+    private final static Long ACCESS_TOKEN_EXPIRED_TIME = 1000 * 60L * 30L;
+    private final static Long REFRESH_TOKEN_EXPIRED_TIME = 1000 * 60L * 60L * 24L;
+
     public static String createAccessToken(Authentication authentication) {
         MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
 
@@ -23,7 +28,7 @@ public class JwtUtils {
                 .claim("role", memberDetails.getRole())
                 .claim("providerId", memberDetails.getProviderId())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRED_TIME))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
@@ -33,16 +38,16 @@ public class JwtUtils {
                 .setHeaderParam("typ", "JWT")
                 .setSubject("SecurityPracticeApplication")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRED_TIME))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 
     //TODO: 예외 처리
-    public static MemberDetails createMemberDetails(String jwt) {
+    public static MemberDetails createMemberDetails(String accessToken, String refreshToken) {
         Jws<Claims> claimsJws = Jwts.parser()
                 .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(jwt);
+                .parseClaimsJws(accessToken);
 
         Long id = Long.valueOf(claimsJws.getBody().get("id").toString());
         String username = claimsJws.getBody().get("username").toString();

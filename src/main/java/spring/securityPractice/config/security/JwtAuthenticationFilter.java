@@ -4,8 +4,11 @@ import static spring.securityPractice.config.security.JwtConstants.AUTHORIZATION
 import static spring.securityPractice.config.security.JwtConstants.AUTHORIZATION_HEADER_PREFIX;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +26,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
+        Optional<Cookie> cookie = Arrays.stream(request.getCookies())
+                .filter(c -> c.getName() == "refreshToken")
+                .findFirst();
 
         if (authorizationHeader != null) {
-            String jwt = authorizationHeader.replace(AUTHORIZATION_HEADER_PREFIX, "");
-            MemberDetails memberDetails = JwtUtils.createMemberDetails(jwt);
+            String accessToken = authorizationHeader.replace(AUTHORIZATION_HEADER_PREFIX, "");
+            String refreshToken = cookie.get().getValue();
+
+            MemberDetails memberDetails = JwtUtils.createMemberDetails(accessToken, refreshToken);
             OAuth2AuthenticationToken oAuth2AuthenticationToken = createToken(memberDetails);
             SecurityContextHolder.getContext().setAuthentication(oAuth2AuthenticationToken);
         }
