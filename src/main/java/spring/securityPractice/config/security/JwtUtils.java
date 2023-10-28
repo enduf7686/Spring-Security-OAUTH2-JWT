@@ -43,7 +43,7 @@ public class JwtUtils {
                 .compact();
     }
 
-    public static MemberDetails createMemberDetails(String accessToken, String refreshToken) {
+    public static MemberDetails createMemberDetails(String accessToken) {
         Jws<Claims> claimsJws = Jwts.parser()
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(accessToken);
